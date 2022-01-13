@@ -1,9 +1,16 @@
-import XCTest
 @testable import SSDPClient
+import XCTest
 
 let duration: TimeInterval = 5
 
+// MARK: - SSDPDiscoveryTests
+
 class SSDPDiscoveryTests: XCTestCase {
+    static var allTests = [
+        ("testDiscoverService", testDiscoverService),
+        ("testStop", testStop),
+    ]
+
     let client = SSDPDiscovery()
 
     var discoverServiceExpectation: XCTestExpectation?
@@ -14,9 +21,9 @@ class SSDPDiscoveryTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        self.errorExpectation = expectation(description: "Error")
-        self.errorExpectation!.isInverted = true
-        self.client.delegate = self
+        errorExpectation = expectation(description: "Error")
+        errorExpectation!.isInverted = true
+        client.delegate = self
     }
 
     override func tearDown() {
@@ -24,42 +31,39 @@ class SSDPDiscoveryTests: XCTestCase {
     }
 
     func testDiscoverService() {
-        self.startExpectation = expectation(description: "Start")
-        self.discoverServiceExpectation = expectation(description: "DiscoverService")
+        startExpectation = expectation(description: "Start")
+        discoverServiceExpectation = expectation(description: "DiscoverService")
 
-        self.client.discoverService(forDuration: duration, searchTarget: "ssdp:all", port: 1900)
+        client.discoverService(forDuration: duration, searchTarget: "ssdp:all", port: 1900)
 
-        wait(for: [self.errorExpectation!, self.startExpectation!, self.discoverServiceExpectation!], timeout: duration)
+        wait(for: [errorExpectation!, startExpectation!, discoverServiceExpectation!], timeout: duration)
     }
 
     func testStop() {
-        self.stopExpectation = expectation(description: "Stop")
-        self.client.discoverService()
-        self.client.stop()
-        wait(for: [self.errorExpectation!, self.stopExpectation!], timeout: duration)
+        stopExpectation = expectation(description: "Stop")
+        client.discoverService()
+        client.stop()
+        wait(for: [errorExpectation!, stopExpectation!], timeout: duration)
     }
-
-    static var allTests = [
-        ("testDiscoverService", testDiscoverService),
-        ("testStop", testStop),
-    ]
 }
+
+// MARK: SSDPDiscoveryDelegate
 
 extension SSDPDiscoveryTests: SSDPDiscoveryDelegate {
     func ssdpDiscovery(_ discovery: SSDPDiscovery, didDiscoverService service: SSDPService) {
-        self.discoverServiceExpectation?.fulfill()
-        self.discoverServiceExpectation = nil
+        discoverServiceExpectation?.fulfill()
+        discoverServiceExpectation = nil
     }
 
     func ssdpDiscoveryDidStart(_ discovery: SSDPDiscovery) {
-        self.startExpectation?.fulfill()
+        startExpectation?.fulfill()
     }
 
     func ssdpDiscoveryDidFinish(_ discovery: SSDPDiscovery) {
-        self.stopExpectation?.fulfill()
+        stopExpectation?.fulfill()
     }
 
     func ssdpDiscovery(_ discovery: SSDPDiscovery, didFinishWithError error: Error) {
-        self.errorExpectation?.fulfill()
+        errorExpectation?.fulfill()
     }
 }
