@@ -96,10 +96,13 @@ public class SSDPDiscovery {
         }
     }
 
+    open func stopRecurringSearch() {
+        searchInitiator?.invalidate()
+        stop()
+    }
+
     /// Stop the discovery before the timeout.
     open func stop() {
-        searchInitiator?.invalidate()
-
         if socket != nil {
             print("Stop SSDP discovery")
             forceStop()
@@ -167,8 +170,6 @@ public class SSDPDiscovery {
 
     /// Force stop discovery closing the socket.
     private func forceStop() {
-        searchInitiator?.invalidate()
-
         if isDiscovering, let socket = socket {
             socket.close()
         }
