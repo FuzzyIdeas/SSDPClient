@@ -36,6 +36,7 @@ public extension SSDPDiscoveryDelegate {
 
 /// SSDP discovery for UPnP devices on the LAN
 public class SSDPDiscovery {
+    static var debugEnabled = false
     // MARK: Lifecycle
 
     // MARK: Initialisation
@@ -84,9 +85,9 @@ public class SSDPDiscovery {
 
             readResponses(forDuration: duration)
 
-            #if DEBUG
+            if SSDPDiscovery.debugEnabled {
                 print("Send: \(message)")
-            #endif
+            }
             try socket?.write(from: message, to: Socket.createAddress(for: "239.255.255.250", on: port)!)
 
         } catch {
@@ -140,9 +141,9 @@ public class SSDPDiscovery {
                let response = String(data: data, encoding: .utf8),
                let (remoteHost, _) = Socket.hostnameAndPort(from: address)
             {
-                #if DEBUG
+                if SSDPDiscovery.debugEnabled {
                     print("Received: \(response) from \(remoteHost)")
-                #endif
+                }
                 delegate?.ssdpDiscovery(self, didDiscoverService: SSDPService(host: remoteHost, response: response))
             }
 

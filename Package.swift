@@ -13,7 +13,7 @@ let package = Package(
         .library(name: "SSDPClient", targets: ["SSDPClient"]),
     ],
     dependencies: [
-        .package(name: "Socket", url: "https://github.com/Kitura/BlueSocket.git", from: "1.0.200"),
+        .package(name: "Socket", url: "https://github.com/Kitura/BlueSocket.git", from: "2.0.2"),
     ],
     targets: [
         .target(
